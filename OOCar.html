@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>OOCar</title>
+</head>
+
+<body>
+    <img src="./포르쉐.jpg" alt="포르쉐"><br>
+    <button id="acell">가속</button>
+    <button id="break">감속</button>
+</body>
+<script>
+
+    function Car(model, speed, color) {
+        this.model = model; 
+        this.speed = speed; 
+        this.color = color;
+
+        this.breaking = function () {
+            this.speed -= 10;
+        }
+        this.Accel = function () {
+            this.speed += 10;
+        }
+    }
+
+    let myCar = new Car("model", 55, "Grey");
+document.querySelector("#acell").onclick = function() {
+    myCar.Accel();
+    alert(myCar.speed);
+}
+document.querySelector("#break").onclick = function() {
+    myCar.breaking();
+    alert(myCar.speed);
+}
+</script>
+
+</html>
