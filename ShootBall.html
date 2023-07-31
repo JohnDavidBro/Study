@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/128/1380/1380399.png">
+    <title>Fortress-01</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbit&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Orbit', sans-serif;
+        }
+        canvas {
+            /* 배경색을 지정한다. */
+            background-color: #ecf500;
+            /* 배경끝 박스를 지정한다. */
+            border: 5px ridge black;
+        }
+    </style>
+</head>
+
+<!--Game Controler-->
+<body onload="init();">
+    <canvas id="fortresscanvas"></canvas>
+    <div>
+        속도<input id="velocity" value="30" type="number" min="0" max="100" step="1" />
+        각도<input id="angle" value="45" type="number" min="0" max="85" step="1" />
+        <div id="score">점수 = 0</div>
+        <button onclick="start();">발사</button>
+    </div>
+</body>
+
+<script src="ball.js"></script>
+<script src="canon.js"></script>
+<script src="target.js"></script>
+<script src="planet.js"></script>
+<script>
+    // 300, 500 기본은 px로 정해진다.
+    let 물리계 = document.getElementById("fortresscanvas");
+    물리계.setAttribute('height', 300);
+    물리계.setAttribute('width', 500);
+
+let tryCnt = 0;                      /* 시도 횟수 */
+let score = 0;                       /* 점수 */
+let groundImage = new Image();             /* 그라운드 이미지 생성 */
+groundImage.src = "jandi.jpg";             /* 땅 그림 그리기 */
+let targetImage = new Image();          /* 배경 이미지 객체 생성 */
+targetImage.scr = "net.png";          /* 배경 이미지 파일 이름 생성 */
+let timer;                           /* 타이머 객체 변수 */
+
+/** 사용법 */
+let earth = new Planet(groundImage, 10);
+let ball = new Ball(10);
+let cannon = new Cannon();
+let target = new Target(targetImage, 450, 60, 30, 200);
+
+// 초기화를 담장하는 함수
+function init() {
+    clearInterval(timer);
+    cannon.위치지정(10, 250);
+    cannon.장전(ball);
+    draw();
+}
+
+// 사용자가 발사 버튼을 누르면 호출된다.
+function start() {
+
+tryCnt++;
+//날아가고 있어도 취소하고 다시 쏘기.
+init();
+
+/* 사용자가 입력한 공의 초기속도 */
+let velocity = Number(document.getElementById("velocity").value);
+
+/* 사용자가 입력한 공의 초기각도 */
+let angle = Number(document.getElementById("angle").value);
+cannon.발사(velocity, angle);
+
+//초당 10회.
+ball.그리기간격(100);
+timer = setInterval(calculate, 100);
+}
+
+// 공의 현재 속도와 위치를 업데이트 한다.
+function calculate() {
+    ball.시간흐름();
+    if (ball.맞췄니(target)) {
+        score++;
+        document.getElementById("score").innerHTML=tryCnt + "번 쏘아 " + score + "점수 획득";
+        clearInterval(timer);
+    }
+
+    /*//공이 경계를 벗어났으면 // 땅에 닿았니
+    if (ballY >= 300) {
+        clearInterval(timer);
+    } */
+    draw();
+}
+    
+// 전체 화면을 그리는 함수.
+function draw() {
+
+    let context = 물리계.getContext('2d'); /* 컨텍스트 객체 */
+     // 해당 범위 화면을 지운다.
+    context.clearRect(0, 0, 물리계.getAttribute('width'), 물리계.getAttribute('height'));
+    target.draw(context);
+    ball.drawBall(context);
+    earth.땅그리기(context, 물리계.getAttribute('height'));
+}
+
+</script>
+</html>
