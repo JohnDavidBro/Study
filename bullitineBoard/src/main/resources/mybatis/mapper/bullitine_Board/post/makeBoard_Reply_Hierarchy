@@ -1,0 +1,11 @@
+INSERT INTO T_reply(id, descrim, writer_id, content, bb_id, TITLE)
+		VALUES ('p001', 'Post', '000n', '0003', 'dog', 'i like');
+		
+INSERT INTO T_reply(id, descrim, writer_id, content, bb_id, TITLE)
+		VALUES ('p002', 'Post', '000n', '0003', 'cat', 'i like');
+		
+INSERT INTO T_reply(id, descrim, writer_id, content)
+		VALUES ('r000', 'reply', '0003', 'puppyiscute');
+
+INSERT INTO T_Comp_Hierarchy(id, comp_Hierarchy, kind)
+		VALUES ('r000', 'p001r000', 't2b');

@@ -20,7 +20,7 @@ public class PartyController {
 	private PartyService partyservice;
 	
 	@GetMapping("/listAll") 
-	public ResponseEntity<?> listAll() {
+	public ResponseEntity<List<PartyVO>> listAll() {
 		List<PartyVO> list = partyservice.listAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}

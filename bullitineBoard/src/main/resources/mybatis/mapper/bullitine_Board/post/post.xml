@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.dream.bullitine_Board.mapper.PostMapper">
+	<resultMap id="rmReplyVO" extends="nsEntity.rmMasterEntity" type="www.dream.bullitine_Board.model.ReplyVO">
+		<result property="content" column="content" />
+		<result property="hierarchyId" column="????" />
+		
+		<!-- columnPrefix("w_"값이 있으면, 위에서 해석하지 말고 가져와서 여기서 해석한다. -->
+		<association property="writer" columnPrefix="w_"
+			resultMap="www.dream.bullitine_Board.mapper.PartyMapper.rmPartyVO" />
+		<collection property="listReply" columnPrefix="reply_"
+			resultMap="rmReplyVO">
+		</collection>
+		<discriminator javaType="String" column="descrim">
+			<case value="Post" resultMap="rmPostVO" />
+		</discriminator>
+	</resultMap>
+	
+	<resultMap id="rmPostVO" extends="rmReplyVO"
+		type="www.dream.bullitine_Board.model.PostVO">
+		<result property="title" column="TITLE" />
+		<result property="readCnt" column="read_cnt" />
+		<result property="likeCnt" column="like_cnt" />
+		<result property="dislikeCnt" column="dislike_cnt" />
+	</resultMap>
+	
+	<!--  public List<PostVO> listAllPost(String boardId); -->
+	<select id="listAllPost" resultMap="rmPostVO">
+	
+	<!-- ALIAS 에일리어스 -->
+	select p.*, w.id w_id, w.descrim w_descrim, w.name w_name, w.gender w_gender, w.reg_dt w_reg_dt, w.upt_dt w_upt_dt
+	  from T_reply p, T_party w
+	 where p.bb_id = #{boardId}
+	   and p.writer_id = w.id
+	 </select>
+	 
+	<!-- public PostVO findById(String id); -->
+	<select id="findById" resultMap="rmPostVO">
+	select p.*, r.id reply_id, r.descrim reply_descrim, r.writer_id reply_writer_id, r.content reply_content, r.reg_dt reply_reg_dt, r.upt_dt reply_upt_dt 
+	  from T_reply p, T_Comp_Hierarchy h
+	  	   LEFT OUTER JOIN T_reply r
+	  	on p.id = cp.owner.id
+	 where p.id = #{id}
+	   and h.comp_Hierarchy like CONCAT(#{id} + '%')
+	   and h.kind = 't2b'
+	   and h.id = r.id
+	 </select>
+	 <!-- h.comp_Hierarchy like CONCAT(mariadb용)(#{id} + '%') = id로 부터 시작하는 모든 댓글들 -->
+	 <!-- h.kind = 't2b' = 위에서 아래로 읽는 식(댓글) -->
+	 <!-- h.comp_Hierarchy like CONCAT('%', r.id) = 댓글, 대댓글 찾는것. -->
+	 
+	<!-- public int createPost(PostVO post); -->
+	<insert id="createPost" parameterType="rmPostVO">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select NEXT_PK('s_post');
+		</selectKey>
+			INSERT INTO T_reply(id, descrim, writer_id, content, bb_id, TITLE);
+			VALUES (#{id}, 'Post', #{writer.id}, #{content}, #{boardVO.id}, #{title});
+	 </insert>
+	 
+	<!-- public int createReply(@Param("parent") ReplyVO parent, @Param("reply") ReplyVO reply); -->
+	<insert id="createReply" parameterType="ReplyVO">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select NEXT_PK('s_reply');
+		</selectKey>
+			INSERT INTO T_reply(id, descrim, writer_id, content);
+			VALUES (#{id}, 'reply', #{reply.writer.id}, #{reply.content});
+			
+			INSERT INTO T_Comp_Hierarchy(comp_Hierarchy, kind);
+			VALUES (CONCAT(#{parent.hierarchyId}, #{id}), 't2b');
+	 </insert>
+
+	<!-- public int updatePost(PostVO post); -->
+	<update id="updatePost">
+	 update T_reply
+		set TITLE = #{title};
+			content = #{content};
+	  where id = #{id};
+	 </update>
+	
+	<!-- public int updateReply(ReplyVO reply); -->
+	<update id="updateReply">
+	 update T_reply
+		set content = #{content};
+	  where id = #{id};
+	 </update>
+	
+	<!-- public int deleteReply(String id); -->
+	<delete id="deleteReply">
+	 delete T_reply
+	  where id = #{id};
+	  
+	 delete from T_Comp_Hierarchy
+	  where comp_hierarchy = CONCAT(#{hierarchyId}, '%');
+	 </delete>
+</mapper>

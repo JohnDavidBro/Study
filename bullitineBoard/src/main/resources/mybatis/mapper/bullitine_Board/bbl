@@ -50,21 +50,21 @@ create table T_Contect_Point(
 );
 
 ----------------
-/* id, writer_id, original_id, content, reg_dt, upt_dt, TITLE, read_cnt, like_cnt, dislike_cnt */
+/* id, descrim, writer_id, original_id, content, reg_dt, upt_dt, TITLE, read_cnt, like_cnt, dislike_cnt */
 create table T_reply(
   id		  char(4) primary key,
+  descrim 	  varchar(255) not null, /*'Manager', 'Member' */
   writer_id	  char(4) not null,
-  original_id char(4),
   content 	  TEXT(65000),
   reg_dt 	  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   upt_dt 	  TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   /* 아래 속성은 게시글 일때만 활용되는 */
-  bb_id		  char(4) not null,
+  bb_id		  char(4),
   TITLE 	  varchar(255),
-  read_cnt	  int,
-  like_cnt	  int,
-  dislike_cnt int
+  read_cnt	  int default 0,
+  like_cnt	  int default 0,
+  dislike_cnt int default 0
 );
 /* 태그 id, word, description(설명), df */
 /* 통합검색체계 */
@@ -89,9 +89,27 @@ create index idx_tgt_tag on T_TGT_Tag(tgt_name, tgt_id, tag_id);
 
 /* top2bottom, bottom2top */
 create table T_Comp_Hierarchy(
-	comp_Hierarchy	varchar(255) primary key,
+    id		        char(4) primary key, /* 소유주 */
+	comp_Hierarchy	varchar(255), /* 소유주 까지의 모든 길 및 그 밑의 모든 떨거지들까지 */
 	kind			char(3)	/* t2b, b2t */
 );
+
+create index idx_Comp_Hierarchy on T_Comp_Hierarchy(comp_Hierarchy);
+
+/** T_reply(
+	urur, 'post'
+	r000, 'post'
+  	urur, op78, 'reply'
+  	op78, weqe, 'reply'
+  	qqwq, 'reply'
+
+T_Comp_Hierarchy
+	urur urur
+	r000 r000
+	op78 ururop78 ('urur''op78')
+	weqe ururop78weqe ('urur''op78''weqe')
+	qqwq ururop78qqwq ('urur''op78''qqwq')
+*/
 
 
 /* 개인적관심사 party_id, tag_id, tf */
