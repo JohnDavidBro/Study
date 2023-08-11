@@ -15,26 +15,20 @@ import www.dream.bullitine_Board.service.BoardService;
 
 @RestController //Container에 담기도록 지정
 @RequestMapping("/bb")
-
 public class BoardController {
 	@Autowired
 	private BoardService boardservice;
 	
 	@GetMapping("/listAll") 
-	public ResponseEntity<?> listAll() {
+	public ResponseEntity<List<BoardVO>> listAll() {
 		List<BoardVO> list = boardservice.listAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> findById(@PathVariable String id) { // Model = 정보 (인터페이스 / 스프링이 만들어 우리에게 준것)
+	public ResponseEntity<BoardVO> findById(@PathVariable String id) { // Model = 정보 (인터페이스 / 스프링이 만들어 우리에게 준것)
 		BoardVO board = boardservice.findById(id);
 		return new ResponseEntity<>(board, HttpStatus.OK);
 	}
-	/** @GetMapping("/{dd}") // 이런 식으로 가능.
-	public ResponseEntity<?> findBydd(@PathVariable String dd) { // Model = 정보 (인터페이스 / 스프링이 만들어 우리에게 준것)
-		BoardVO boards = boardservice.findBydd(dd);
-		return new ResponseEntity<>(boards, HttpStatus.OK);
-	}
-	 */
+
 }

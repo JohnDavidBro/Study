@@ -9,5 +9,4 @@ public class BullitineBoardApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BullitineBoardApplication.class, args);
 	}
-
 }
