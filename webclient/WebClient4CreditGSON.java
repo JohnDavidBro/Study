@@ -1,7 +1,7 @@
 package www.dream.bbs.webclient;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +27,9 @@ public class WebClient4CreditGSON {
 	@Autowired
 	private PartyService partyService;
 
-	Set<TmdbCastsVO> listCredits = new HashSet<>();
+	Set<TmdbCastsVO> creditSet = new TreeSet<>();
 
+	// 영화 출연진 정보를 받는 곳.
 	public void loadCredit(Integer movieId) {
 
 		// https://api.themoviedb.org/3/person/1?api_key=a158e2a9424bc69fec449dcaeb82aba8
@@ -45,22 +46,12 @@ public class WebClient4CreditGSON {
 
 		Gson gson = new Gson();
 		TmdbCreditsVO credits = gson.fromJson(resultCredits, TmdbCreditsVO.class);
-		for (TmdbCastsVO result : credits.getCasts()) {
-			Integer id = result.getId();
+		for (TmdbCastsVO castVo : credits.getCasts()) {
+			Integer id = castVo.getId();
 			String stringId = partyService.changeId(id);
-			result.setStringId(stringId);
-			System.out.println("Credit ID: " + stringId);
-			System.out.println("Credits Gender: " + result.getGender());
-			System.out.println("Known For Department: " + result.getDepartment());
-			System.out.println("Credits Member Name: " + result.getName());
-			System.out.println("Profile Path: " + result.getProfilePath());
-			System.out.println("Character: " + result.getCharacter());
-			System.out.println("Cast ID: " + result.getCastId());
+			castVo.setStringId(stringId);
+			creditSet.add(castVo);
 		}
-		
-		listCredits.addAll(credits.getCasts());
-
-		partyService.saveCredits(listCredits);
+		partyService.saveCredits(creditSet);
 	}
-
 }

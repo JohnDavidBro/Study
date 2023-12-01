@@ -1,8 +1,8 @@
 package www.dream.bbs.webclient;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +15,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.google.gson.Gson;
 
-import www.dream.bbs.movie.model.MovieGenreDTO;
+import www.dream.bbs.movie.model.TmdbGenreVO;
 import www.dream.bbs.movie.model.TmdbMovieDataVO;
+import www.dream.bbs.movie.model.TmdbMovieDetailVO;
 import www.dream.bbs.movie.model.TmdbMovieResultVO;
+import www.dream.bbs.movie.model.TmdbReleaseDateVO;
 import www.dream.bbs.movie.service.GenreService;
 import www.dream.bbs.movie.service.MovieService;
 
@@ -43,14 +45,14 @@ public class WebClient4MoviesGSON {
 	@Autowired
 	private WebClient4MovieReleaseDateGSON webClient4MovieReleaseDateGSON;
 
-	Set<TmdbMovieResultVO> listMovie = new HashSet<>();
+	Set<TmdbMovieResultVO> listMovie = new TreeSet<>();
 
 	@Scheduled(fixedDelay = 30000)
 	public void loadMovie() {
 
-		List<MovieGenreDTO> listGenre = genreService.listGenreInfo();
+		List<TmdbGenreVO> listGenre = genreService.listGenreInfo();
 
-		for (MovieGenreDTO genre : listGenre) {
+		for (TmdbGenreVO genre : listGenre) {
 			int genreIds = genre.getId();
 
 			// themoviedb.org에서 movie/popular 에 따른 정보 획득
@@ -71,28 +73,25 @@ public class WebClient4MoviesGSON {
 				TmdbMovieDataVO movie = gson.fromJson(resultMovie, TmdbMovieDataVO.class);
 
 				for (TmdbMovieResultVO result : movie.getResults()) {
-					System.out.println("BackDrop Path: " + result.getBackdropPath());
 					Integer id = result.getId();
-					System.out.println("Movie ID: " + id);
-					System.out.println("Original Language: " + result.getOlLang());
-					System.out.println("Original Title: " + result.getOlTitle());
-					System.out.println("Overview: " + result.getOverview());
-					System.out.println("Popularity: " + result.getPopularity());
-					System.out.println("Poster Path: " + result.getPostPath());
-					System.out.println("Title: " + result.getTitle());
-					System.out.println("Vote Average: " + result.getVoteAverage());
-					System.out.println("Vote Count: " + result.getVoteCount());
-
+					
 					webClient4MovieDetailGSON.loadMovieDetails(result);
 					webClient4MovieReleaseDateGSON.loadRelease(result);
 					webClient4CreditGSON.loadCredit(id);
+					
+					if (result.getDetails() == null) {
 
-					result.getDetail();
-					result.getReleases();
+						result.setDetails(new TmdbMovieDetailVO());
+					}
+					if (result.getReleases() == null) {
+
+						result.setReleases(new TmdbReleaseDateVO());
+					}
+					
+					listMovie.add(result);
+					movieService.saveMovie(listMovie);
 				}
-				listMovie.addAll(movie.getResults());
 			}
 		}
-		movieService.saveMovie(listMovie);
 	}
 }

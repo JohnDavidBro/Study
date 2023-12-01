@@ -38,12 +38,8 @@ public class WebClient4MovieReleaseDateGSON {
 		Gson gson = new Gson();
 		TmdbReleaseDataVO release = gson.fromJson(resultDetail, TmdbReleaseDataVO.class);
 		for (TmdbReleaseResultVO releaseResultVO : release.getResults()) {
-			System.out.println("Country: " + releaseResultVO.getCountry());
 			for (TmdbReleaseDateVO dates : releaseResultVO.getDates()) {
-				System.out.println("Certification: " + dates.getCertification());
-				System.out.println("Release Date: " + dates.getReleaseDate());
-
-				movieVo.setReleases(release);
+				movieVo.setReleases(dates);
 			}
 		}
 	}

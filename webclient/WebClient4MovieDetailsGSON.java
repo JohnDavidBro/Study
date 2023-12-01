@@ -2,6 +2,8 @@ package www.dream.bbs.webclient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +32,8 @@ public class WebClient4MovieDetailsGSON {
 	@Autowired
 	private PartyService partyService;
 
-	List<TmdbCompanyVO> listCompany = new ArrayList<>();
-
+	Set<TmdbCompanyVO> listCompany = new TreeSet<>();
+	
 	public void loadMovieDetails(TmdbMovieResultVO movieVo) {
 		Integer movieId = movieVo.getId();
 
@@ -48,17 +50,9 @@ public class WebClient4MovieDetailsGSON {
 		Gson gson = new Gson();
 		TmdbMovieDetailVO detail = gson.fromJson(resultDetail, TmdbMovieDetailVO.class);
 		// 영화 세부 정보 데이터 값 받는 곳.
-		System.out.println("Budget: " + detail.getBudget());
-		System.out.println("IMDB ID: " + detail.getImdbId());
-		System.out.println("Revenue: " + detail.getRevenue());
-		System.out.println("Runtime: " + detail.getRuntime());
-		System.out.println("Status: " + detail.getStatus());
-		System.out.println("tagline: " + detail.getTagline());
-		
 		List<String> genrenames = new ArrayList<>();
 		for (TmdbMovieGenreVO genre : detail.getGenres()) {
 			String name = genre.getName();
-			System.out.println("Genre Name: " + name);
 			genrenames.add(name);
 		}
 		// 상세 정보 속 컴퍼티 정보, 컴퍼니 VO 속 리스트에서 컴퍼니 ID와 Logo, Name값을 가져온다.
@@ -67,16 +61,12 @@ public class WebClient4MovieDetailsGSON {
 			Integer id = company.getId();
 			String stringId = partyService.changeId(id);
 			company.setStringId(stringId);
-			System.out.println("Company Id: " + stringId);
-			System.out.println("Company LogoPath: " + company.getLogoPath());
-			System.out.println("Company Name: " + company.getName());
-			System.out.println("Original Country: " + company.getCountry());
+			listCompany.add(company);
 		}
 		
-		listCompany.addAll(credits.getCompanies());
 		partyService.saveCompany(listCompany);
 		String genress = String.join(", ", genrenames);
 		movieVo.setGenreNames(genress);
-		movieVo.setDetail(detail);
+		movieVo.setDetails(detail);
 	}
 }
