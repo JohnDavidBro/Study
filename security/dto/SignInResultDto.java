@@ -19,14 +19,14 @@ public class SignInResultDto extends SignUpResultDto {
 	private String userId;
 	private String userName;
 	private String userNick;
-	private String roles;
+	private List<String> roles;
 	private Date birth;
 	private Date membership;
 	private int penalty;
 
 	@Builder
 	public SignInResultDto(boolean success, int code, String msg, 
-			String token, String roles, String userId, String userName, String userNick,
+			String token, List<String> roles, String userId, String userName, String userNick,
 			Date birth, Date membership, int penalty) {
 		super(success, code, msg);
 		this.token = token;

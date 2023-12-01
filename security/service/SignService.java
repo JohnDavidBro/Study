@@ -12,24 +12,24 @@ import org.springframework.stereotype.Service;
 import www.dream.bbs.framework.CommonResponse;
 import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.framework.exception.ErrorCode;
+import www.dream.bbs.party.mapper.PartyMapper;
+import www.dream.bbs.party.model.User4PartyVO;
 import www.dream.bbs.security.config.JwtTokenProvider;
 import www.dream.bbs.security.dto.SignInDto;
 import www.dream.bbs.security.dto.SignInResultDto;
 import www.dream.bbs.security.dto.SignUpResultDto;
-import www.dream.bbs.user.mapper.UserMapper;
-import www.dream.bbs.user.model.UserVO;
 
 @Service
 public class SignService {
 	private final Logger LOGGER = LoggerFactory.getLogger(SignService.class);
 
-	public UserMapper userMapper;
+	public PartyMapper partyMapper;
 	public JwtTokenProvider jwtTokenProvider;
 	public PasswordEncoder passwordEncoder;
 
 	@Autowired
-	public SignService(UserMapper userMapper, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
-		this.userMapper = userMapper;
+	public SignService(PartyMapper partyMapper, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+		this.partyMapper = partyMapper;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.passwordEncoder = passwordEncoder;
 	}
@@ -37,7 +37,7 @@ public class SignService {
 	/** 로그인 처리 */
 	public SignInResultDto signIn(SignInDto signInDTO) {
 		LOGGER.info("[getSignInResult] signDataHandler 로 회원 정보 요청");
-		UserVO user = userMapper.findByNick(signInDTO.getId());
+		User4PartyVO user = partyMapper.findByNick(signInDTO.getId());
 
 		LOGGER.info("[getSignInResult] 패스워드 비교 수행");
 		// User없는 상황 및 Password 오류 상황을 명확히 구분하여 알려주지 않음. 보안성 강화
@@ -53,7 +53,9 @@ public class SignService {
 						user.getAuthorities().stream()
 						.map(GrantedAuthority::getAuthority)
 						.collect(Collectors.toList())))
-				.roles(user.getAccountType())
+					.roles(user.getAuthorities().stream()
+						.map(GrantedAuthority::getAuthority)
+						.collect(Collectors.toList()))
 				.userId(user.getId())
 				.userName(user.getName())
 				.userNick(user.getNick())

@@ -11,9 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 //예제 13.17
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 	private final JwtTokenProvider jwtTokenProvider;

@@ -19,7 +19,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import www.dream.bbs.user.mapper.UserMapper;
+import www.dream.bbs.party.mapper.PartyMapper;
 
 /**
  * JWT 토큰을 생성하고 유효성을 검증하는 컴포넌트 클래스 JWT 는 여러 암호화 알고리즘을 제공하고 알고리즘과 비밀키를 가지고 토큰을 생성
@@ -34,10 +34,10 @@ import www.dream.bbs.user.mapper.UserMapper;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-	private final UserMapper userMapper; // Spring Security 에서 제공하는 서비스 레이어. PartyService
+	private final PartyMapper partyMapper; // Spring Security 에서 제공하는 서비스 레이어. PartyService
 
 	@Value("${springboot.jwt.secret}") // 비밀키
-	private String secretKey = "secretKey";
+	private String secretKey = "secretKey00";
 	private final long tokenValidMillisecond = 1000L * 60 * 60; // 1시간 토큰 유효
 
 	/**
@@ -45,9 +45,9 @@ public class JwtTokenProvider {
 	 */
 	@PostConstruct // 객체 만든 이후 연이어 수행
 	protected void init() {
-		// System.out.println(secretKey);
+		//System.out.println(secretKey);
 		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
-		// System.out.println(secretKey);
+		//System.out.println(secretKey);
 	}
 
 	// 예제 13.12
@@ -68,14 +68,14 @@ public class JwtTokenProvider {
 	// 예제 13.13
 	// JWT 토큰으로 인증 정보 조회
 	public Authentication getAuthentication(String token) {
-		UserDetails userDetails = userMapper.findByNick(this.getUsername(token));
+		UserDetails userDetails = partyMapper.findByNick(this.getUsername(token));
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
 	// 예제 13.14
 	// JWT 토큰에서 회원 구별 정보 추출
 	public String getUsername(String token) {
-		// 비밀스러운 나만의 비밀키(개인키)로 JWT 내용을 볼 수 있어
+		//비밀스러운 나만의 비밀키로 (개인키) JWT 내용을 볼 수 있어
 		String info = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
 		return info;
 	}
@@ -88,14 +88,14 @@ public class JwtTokenProvider {
 	 * @return String type Token 값
 	 */
 	public String resolveToken(HttpServletRequest request) {
-		String requestHeader = request.getHeader("X-AUTH-TOKEN");
-		String token = null;
+        String requestHeader = request.getHeader("x-auth-token");
+        String token = null;
 
-		if (requestHeader != null && requestHeader.startsWith("Bearer")) {
-			// looking good
-			token = requestHeader.substring(7);
-		}
-		return token;
+        if (requestHeader != null && requestHeader.startsWith("Bearer")) {
+            //looking good
+            token = requestHeader.substring(7);
+        }
+        return token; 
 	}
 
 	// 예제 13.16
