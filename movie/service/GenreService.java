@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import www.dream.bbs.movie.mapper.GenreMapper;
-import www.dream.bbs.movie.model.MovieGenreDTO;
+import www.dream.bbs.movie.model.TmdbGenreVO;
 
 @Service
 public class GenreService {
@@ -15,7 +15,7 @@ public class GenreService {
 	private GenreMapper genreMapper;
 	
 	//DB에 저장된 tmdb 장르 정보를 가져온다.
-	public List<MovieGenreDTO> listGenreInfo(){
+	public List<TmdbGenreVO> listGenreInfo(){
 		return genreMapper.listGenreInfo();
 	}
 	

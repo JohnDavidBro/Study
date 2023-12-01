@@ -1,4 +1,6 @@
 package www.dream.bbs.movie.model;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.gson.annotations.SerializedName;
 
@@ -34,10 +36,9 @@ public class TmdbMovieResultVO implements Comparable<TmdbMovieResultVO> {
     	@SerializedName("vote_count")
     	Integer voteCount;
 
-    	private TmdbReleaseDataVO releases;
+    	private TmdbMovieDetailVO details;
+    	private TmdbReleaseDateVO releases;
     	
-    	private TmdbMovieDetailVO detail;
-
 		@Override
 		public int compareTo(TmdbMovieResultVO o) {
 			return id - o.id;
