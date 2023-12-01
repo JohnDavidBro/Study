@@ -7,3 +7,5 @@
 JAVA, JavaScript, Css, HTML 언어를 사용하였으며 그 외 MyBatis, Json, Gson, MySQL, LomBok, React, Axios, Node.js 를 사용하였습니다.
 
 짧은 기간 및 비전공자이기에 부족한 점이 많지만, 많은 양해 부탁드리며 올립니다.
+
+![사진](https://github.com/JohnDavidBro/Study/assets/139186761/4046245d-0c4a-4276-ac1d-a0dfc471af48)
