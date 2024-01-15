@@ -4,7 +4,7 @@
 작업은 영화 OTT 사이트를 목표로 제작되었으며,
 
 사용한 프로그램은 SpringBoot, VsCode 이며
-JAVA, JavaScript, Css, HTML 언어를 사용하였으며 그 외 MyBatis, Json, Gson, MySQL, LomBok, React, Axios, Node.js 를 사용하였습니다.
+JAVA, JavaScript, React를 사용하였으며 그 외 MyBatis, Json, Gson, MySQL, LomBok, React, Axios 를 사용하였습니다.
 
 짧은 기간 및 비전공자이기에 부족한 점이 많지만, 많은 양해 부탁드리며 올립니다.
 
